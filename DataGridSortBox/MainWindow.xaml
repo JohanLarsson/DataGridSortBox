@@ -15,7 +15,7 @@
     <Grid>
         <DataGrid AutoGenerateColumns="False"
                   ItemsSource="{Binding DataItems}"
-                  local:DataGridSort.UseCustomSort="True">
+                  local:DataGridSort.UseCustomSort="True"> <!-- This is nasty-->
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Key}"
                                     Header="Key"

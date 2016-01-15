@@ -74,11 +74,6 @@ namespace DataGridSortBox
         {
             var column = e.Column;
             var comparer = (ColumnComparer)column.GetValue(ColumnComparerProperty);
-            if (comparer == null)
-            {
-                return;
-            }
-
             var dataGrid = (DataGrid)sender;
             var view = CollectionViewSource.GetDefaultView(dataGrid.ItemsSource) as ListCollectionView;
             if (view == null)

@@ -2,10 +2,10 @@
 {
     public class DataItem
     {
-        public DataItem(string key, string value)
+        public DataItem(string key)
         {
             Key = key;
-            Value = value;
+            Value = key;
         }
 
         public string Key { get; }
