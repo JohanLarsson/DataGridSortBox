@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-
-namespace DataGridSortBox
+﻿namespace DataGridSortBox
 {
+    using System;
+    using System.Collections;
+    using System.ComponentModel;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Data;
+
     public static class DataGridSort
     {
         public static readonly DependencyProperty ComparerProperty = DependencyProperty.RegisterAttached(
@@ -23,6 +22,12 @@ namespace DataGridSortBox
             typeof(ColumnComparer),
             typeof(DataGridSort),
             new PropertyMetadata(default(ColumnComparer)));
+
+        public static readonly DependencyProperty PreviousComparerProperty = DependencyProperty.RegisterAttached(
+            "PreviousComparer",
+            typeof(IComparer),
+            typeof(DataGridSort),
+            new PropertyMetadata(default(IComparer)));
 
         public static readonly DependencyProperty UseCustomSortProperty = DependencyProperty.RegisterAttached(
             "UseCustomSort",
@@ -73,36 +78,41 @@ namespace DataGridSortBox
         private static void OnDataGridSorting(object sender, DataGridSortingEventArgs e)
         {
             var column = e.Column;
-            var comparer = (ColumnComparer)column.GetValue(ColumnComparerProperty);
+            var columnComparer = (ColumnComparer)column.GetValue(ColumnComparerProperty);
             var dataGrid = (DataGrid)sender;
             var view = CollectionViewSource.GetDefaultView(dataGrid.ItemsSource) as ListCollectionView;
             if (view == null)
             {
                 return;
             }
-
-            if (comparer != null)
+            if (columnComparer == null)
             {
+                view.CustomSort = (IComparer)dataGrid.GetValue(PreviousComparerProperty);
+            }
+            else
+            {
+                if (!(view.CustomSort is ColumnComparer))
+                {
+                    dataGrid.SetValue(PreviousComparerProperty, view.CustomSort);
+                }
+
                 switch (column.SortDirection)
                 {
                     case ListSortDirection.Ascending:
                         column.SortDirection = ListSortDirection.Descending;
-                        view.CustomSort = comparer.Descending;
+                        view.CustomSort = columnComparer.Descending;
                         break;
                     case null:
                     case ListSortDirection.Descending:
                         column.SortDirection = ListSortDirection.Ascending;
-                        view.CustomSort = comparer.Ascending;
+                        view.CustomSort = columnComparer.Ascending;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
 
                 e.Handled = true;
-                return;
             }
-
-            view.CustomSort = null;
         }
 
         private class ColumnComparer : IComparer
@@ -139,6 +149,8 @@ namespace DataGridSortBox
                     return 1;
                 }
 
+                // this can perhaps be a bit slow
+                // Not adding caching yet.
                 var xProp = x.GetType().GetProperty(column.SortMemberPath);
                 var xValue = xProp.GetValue(x);
                 var yProp = x.GetType().GetProperty(column.SortMemberPath);
