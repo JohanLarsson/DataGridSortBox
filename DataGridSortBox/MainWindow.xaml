@@ -15,12 +15,12 @@
     <Grid>
         <DataGrid AutoGenerateColumns="False"
                   ItemsSource="{Binding DataItems}"
-                  local:DataGridSort.UseCustomSort="True"> 
+                  local:DataGridSort.UseCustomSort="True">
             <!--  This is nasty  -->
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Key}"
                                     Header="Key"
-                                    local:DataGridSort.Comparer="{x:Static local:AlphaNumComparatorFast.Default}" />
+                                    local:DataGridSort.Comparer="{x:Static local:StringLengthComparer.Default}" />
                 <DataGridTextColumn Binding="{Binding Value}" Header="Value" />
             </DataGrid.Columns>
         </DataGrid>

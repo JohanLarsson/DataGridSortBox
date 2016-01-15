@@ -52,6 +52,7 @@
     <Compile Include="AlphanumComparatorFast.cs" />
     <Compile Include="DataGridSort.cs" />
     <Compile Include="DataItem.cs" />
+    <Compile Include="StringLengthComparer.cs" />
     <Compile Include="ViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

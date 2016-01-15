@@ -81,19 +81,46 @@ namespace DataGridSortBox
                 return;
             }
 
-            view.CustomSort = comparer;
+            if (comparer != null)
+            {
+                switch (column.SortDirection)
+                {
+                    case ListSortDirection.Ascending:
+                        column.SortDirection = ListSortDirection.Descending;
+                        view.CustomSort = comparer.Descending;
+                        break;
+                    case null:
+                    case ListSortDirection.Descending:
+                        column.SortDirection = ListSortDirection.Ascending;
+                        view.CustomSort = comparer.Ascending;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+
+                e.Handled = true;
+                return;
+            }
+
+            view.CustomSort = null;
         }
 
         private class ColumnComparer : IComparer
         {
             private readonly IComparer valueComparer;
             private readonly DataGridColumn column;
+            private readonly InvertedComparer inverted;
 
             public ColumnComparer(IComparer valueComparer, DataGridColumn column)
             {
                 this.valueComparer = valueComparer;
                 this.column = column;
+                inverted = new InvertedComparer(this);
             }
+
+            public IComparer Ascending => this;
+
+            public IComparer Descending => inverted;
 
             int IComparer.Compare(object x, object y)
             {
@@ -117,6 +144,21 @@ namespace DataGridSortBox
                 var yProp = x.GetType().GetProperty(column.SortMemberPath);
                 var yValue = yProp.GetValue(y);
                 return valueComparer.Compare(xValue, yValue);
+            }
+
+            private class InvertedComparer : IComparer
+            {
+                private readonly IComparer comparer;
+
+                public InvertedComparer(IComparer comparer)
+                {
+                    this.comparer = comparer;
+                }
+
+                public int Compare(object x, object y)
+                {
+                    return comparer.Compare(y, x);
+                }
             }
         }
     }

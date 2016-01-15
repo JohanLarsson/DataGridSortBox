@@ -1,37 +1,43 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace DataGridSortBox
 {
     /// <summary>
     /// http://www.dotnetperls.com/alphanumeric-sorting
     /// </summary>
-    public class AlphaNumComparatorFast : IComparer
+    public class AlphaNumComparatorFast : IComparer<String>, IComparer
     {
         public static readonly AlphaNumComparatorFast Default = new AlphaNumComparatorFast();
 
-        public int Compare(object x, object y)
+        public int Compare(string x, string y)
         {
-            string s1 = x as string;
-            if (s1 == null)
-            {
-                return 0;
-            }
-            string s2 = y as string;
-            if (s2 == null)
+            if (x == y)
             {
                 return 0;
             }
 
-            int len1 = s1.Length;
-            int len2 = s2.Length;
+            if (x == null)
+            {
+                return -1;
+            }
+
+            if (y == null)
+            {
+                return 1;
+            }
+
+            int len1 = x.Length;
+            int len2 = y.Length;
             int marker1 = 0;
             int marker2 = 0;
 
             // Walk through two the strings with two markers.
             while (marker1 < len1 && marker2 < len2)
             {
-                char ch1 = s1[marker1];
-                char ch2 = s2[marker2];
+                char ch1 = x[marker1];
+                char ch2 = y[marker2];
 
                 // Some buffers we can build up characters in for each chunk.
                 char[] space1 = new char[len1];
@@ -49,7 +55,7 @@ namespace DataGridSortBox
 
                     if (marker1 < len1)
                     {
-                        ch1 = s1[marker1];
+                        ch1 = x[marker1];
                     }
                     else
                     {
@@ -64,7 +70,7 @@ namespace DataGridSortBox
 
                     if (marker2 < len2)
                     {
-                        ch2 = s2[marker2];
+                        ch2 = y[marker2];
                     }
                     else
                     {
@@ -96,6 +102,11 @@ namespace DataGridSortBox
                 }
             }
             return len1 - len2;
+        }
+
+        int IComparer.Compare(object x, object y)
+        {
+            return Compare((string)x, (string)y);
         }
     }
 }
