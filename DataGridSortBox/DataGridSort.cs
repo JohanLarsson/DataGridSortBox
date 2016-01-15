@@ -80,6 +80,7 @@ namespace DataGridSortBox
             {
                 return;
             }
+
             view.CustomSort = comparer;
         }
 
