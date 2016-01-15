@@ -23,7 +23,7 @@
             typeof(DataGridSort),
             new PropertyMetadata(default(ColumnComparer)));
 
-        public static readonly DependencyProperty PreviousComparerProperty = DependencyProperty.RegisterAttached(
+        private static readonly DependencyProperty PreviousComparerProperty = DependencyProperty.RegisterAttached(
             "PreviousComparer",
             typeof(IComparer),
             typeof(DataGridSort),
